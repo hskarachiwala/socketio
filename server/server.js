@@ -18,8 +18,28 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
-});
 
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        createdAt: new Date().getTime(),
+        text: 'New user joined'
+    });
+
+    socket.emit('newMessage', {
+        from: 'Admin',
+        createdAt: new Date().getTime(),
+        text: 'Welcome to the app'
+    });
+
+    socket.on('createMessage', (newMessage) => {
+        console.log(newMessage);
+        io.emit('newMessage', {
+            from: newMessage.from,
+            createdAt: new Date().getTime(),
+            text: newMessage.text
+        });
+    });
+});
 
 server.listen(port, () => {
     console.log(`Server is running on ${port}`);
